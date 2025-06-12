@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>寶可夢冷知識</title>
+  <style>
+     body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      text-align: center;
+      padding: 50px;
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      justify-content: center;
+      align-items: center;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url(images/m02.jpg);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0.8;
+      z-index: -1;
+      justify-content: center;
+      align-items: center;
+    }
+    h1 {
+      color: #ff9900;
+    }
+    #cold {
+      font-size: 20px;
+      margin-top: 20px;
+      color: #333;
+    }
+    button {
+      margin-top: 30px;
+      padding: 10px 20px;
+      background-color: #3b4cca;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .content-box {
+      border: 2px solid #ff9900;
+      border-radius: 10px;
+      padding: 20px;
+      display: inline-block;
+      background-color: #fff;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="content-box">
+    <h1>😂 寶可夢冷知識</h1>
+    <div id="cold">載入中...</div>
+    <button onclick="location.href='index.html'">⬅ 返回主畫面</button>
+  </div>
+
+  <script>
+    fetch('/cold')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('cold').textContent = data.cold;
+      });
+  </script>
+</body>
+</html>

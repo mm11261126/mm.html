@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>寶可夢御三家展示</title>
+  <style>
+  body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+  text-align: center;
+  padding: 30px;
+
+  background-image: url(images/m03.jpg);
+  background-size: contain;         /* 縮放圖片以完整呈現 */
+  background-repeat: no-repeat;     /* 不重複圖片 */
+  background-position: center;      /* 置中圖片 */
+  background-attachment: fixed;
+  background-size: cover;
+
+
+
+  }
+  select {
+    font-size: 18px;
+    padding: 10px;
+    margin: 20px 0;
+  }
+  #starterImage {
+    max-width: 500px;
+    margin: 20px auto;
+    display: block; /* ⬅ 這行會讓圖片置中 */
+  }
+  #reply {
+    font-size: 20px;
+    color: #fefeff;
+    margin-top: 10px;
+  }
+  button {
+    margin-top: 30px;
+    padding: 10px 20px;
+    background-color: #3b4cca;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+</style>
+
+</head>
+<body>
+  <h1>選擇一代，看看對應的御三家！</h1>
+  <select id="generation" onchange="fetchStarters()">
+    <option value="">-- 請選擇 --</option>
+    <option value="1">第一代（關都）</option>
+    <option value="2">第二代（城都）</option>
+    <option value="3">第三代（豐緣）</option>
+    <option value="4">第四代（神奧）</option>
+    <option value="5">第五代（卡洛斯）</option>
+    <option value="6">第六代（阿羅拉）</option>
+    <option value="7">第七代（伽勒爾）</option>
+    <option value="8">第八代（洗翠）</option>
+    <option value="9">第九代（帕底亞）</option>
+  </select>
+
+  <div id="reply"></div>
+  <img id="starterImage" src="" alt="" style="display: none; margin: 20px auto; max-width: 500px; display: block;">
+
+  <br>
+  <button onclick="location.href='index.html'">⬅ 返回主畫面</button>
+
+  <script>
+    function fetchStarters() {
+      const gen = document.getElementById('generation').value;
+      if (!gen) return;
+
+      fetch('/starter/' + gen)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('reply').textContent = data.reply;
+          const img = document.getElementById('starterImage');
+          img.src = data.showImage;
+          img.style.display = 'block';
+        });
+    }
+  </script>
+</body>
+</html>

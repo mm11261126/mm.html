@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>寶可夢主畫面</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      text-align: center;
+      padding: 50px;
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url(images/love.png);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0.8;
+      z-index: -1;
+    }
+
+    h1 {
+      color: #e7e8f2;
+     
+    }
+    button {
+      padding: 15px 30px;
+      margin: 20px;
+      font-size: 18px;
+      background-color: #f5eed2;
+      color: #3b4cca;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    #game-window {
+      display: block;
+      width: 400px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .option {
+      padding: 10px 20px;
+      margin: 5px;
+      background-color: #e0d8b7;
+      color: #3b4cca;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    
+
+
+
+
+
+
+
+  </style>
+</head>
+<body>
+  <h1>歡迎來到寶可夢助手！</h1>
+  <button onclick="location.href='chat.html'">🤖 寶可夢聊天機器人</button>
+  <button onclick="location.href='joke.html'">📜 寶可夢笑話</button>
+  <button onclick="location.href='cold.html'">🤖 寶可夢冷知識</button>
+  <button onclick="location.href='starters.html'">🤖 寶可夢御三家</button>
+
+  <!-- 小遊戲區塊，預設顯示 -->
+  <div id="game-window">
+    <h2>猜猜這是誰？</h2>
+    <img id="pokemon-image" src="" alt="寶可夢圖片">
+    <div id="options"></div>
+    <div id="score">分數：0 / 題數：1 / 5</div>
+  </div>
+
+  <script>
+    let score = 0;
+    let question = 1;
+    const maxQuestions = 5;
+
+    async function getRandomPokemonID() {
+      return Math.floor(Math.random() * 898) + 1;
+    }
+
+    async function getPokemonData(id) {
+      const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+      return res.json();
+    }
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+
+    function updateScore() {
+      document.getElementById('score').innerText = `分數：${score} / 題數：${question} / ${maxQuestions}`;
+    }
+
+    async function loadQuestion() {
+      document.getElementById('options').innerHTML = '';
+
+      const correctID = await getRandomPokemonID();
+      const correctPokemon = await getPokemonData(correctID);
+
+      document.getElementById('pokemon-image').src = correctPokemon.sprites.front_default;
+
+      const options = [correctPokemon.name];
+      while (options.length < 4) {
+        const randomID = await getRandomPokemonID();
+        const randomPokemon = await getPokemonData(randomID);
+        if (!options.includes(randomPokemon.name)) {
+          options.push(randomPokemon.name);
+        }
+      }
+
+      shuffle(options);
+
+      options.forEach(name => {
+        const btn = document.createElement('button');
+        btn.className = 'option';
+        btn.textContent = name;
+        btn.onclick = () => {
+          if (name === correctPokemon.name) {
+            score += 10;
+            alert('✅ 答對了！');
+          } else {
+            alert(`❌ 答錯了！正確答案是：${correctPokemon.name}`);
+          }
+
+          question++;
+          if (question > maxQuestions) {
+            document.getElementById('options').innerHTML = '';
+            document.getElementById('pokemon-image').src = '';
+            document.getElementById('score').innerText = `🎉 遊戲結束！總分：${score} / 50`;
+            const restart = document.createElement('button');
+            restart.textContent = '🔁 再玩一次';
+            restart.className = 'option';
+            restart.onclick = () => {
+              score = 0;
+              question = 1;
+              updateScore();
+              loadQuestion();
+            };
+            document.getElementById('options').appendChild(restart);
+          } else {
+            updateScore();
+            loadQuestion();
+          }
+        };
+        document.getElementById('options').appendChild(btn);
+      });
+    }
+
+    // 頁面加載時自動開始遊戲
+    window.onload = () => {
+      loadQuestion();
+    };
+  </script>
+</body>
+</html>
